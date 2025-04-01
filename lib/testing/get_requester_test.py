@@ -1,16 +1,40 @@
-from GetRequester import GetRequester
-class GetRequesterTest:
-    '''Class {Classname} in {modulename}.py'''
-URL = 'https://learn-co-curriculum.github.io/json-site-example/endpoints/people.json'
-JSON_STRING = b"[\n  {\n    \"name\": \"Daniel\",\n    \"occupation\": \"LG Fridge Salesman\"\n  },\n  {\n    \"name\": \"Joe\",\n    \"occupation\": \"WiFi Fixer\"\n  },\n  {\n    \"name\": \"Avi\",\n    \"occupation\": \"DJ\"\n  },\n  {\n    \"name\": \"Howard\",\n    \"occupation\": \"Mountain Legend\"\n  }\n]\n"
-CONVERTED_DATA = [{ 'name': 'Daniel', 'occupation' : 'LG Fridge Salesman' }, { 'name': 'Joe', 'occupation': 'WiFi Fixer' }, { 'name': 'Avi', 'occupation': 'DJ' }, { 'name': 'Howard', 'occupation': 'Mountain Legend' }]
+import pytest
+from unittest.mock import patch, Mock
+from lib.get_requester import GetRequester  # Updated import path
 
-def test_get_response():
-        '''get_response_body function returns response.'''
-        requester = GetRequester(URL)
-        assert(requester.get_response_body() == JSON_STRING)
+# Define test constants
+URL = "http://example.com/data"
+JSON_STRING = b'''[
+  {"name": "Daniel", "occupation": "LG Fridge Salesman"},
+  {"name": "Joe", "occupation": "WiFi Fixer"},
+  {"name": "Avi", "occupation": "DJ"},
+  {"name": "Howard", "occupation": "Mountain Legend"}
+]'''
+CONVERTED_DATA = [
+  {"name": "Daniel", "occupation": "LG Fridge Salesman"},
+  {"name": "Joe", "occupation": "WiFi Fixer"},
+  {"name": "Avi", "occupation": "DJ"},
+  {"name": "Howard", "occupation": "Mountain Legend"}
+]
 
-def test_load_json():
-        '''load_json function returns response.'''
-        requester = GetRequester(URL)
-        assert(requester.load_json() == CONVERTED_DATA)
+@patch('requests.get')  # Mock requests.get
+def test_get_response_body(mock_get):
+    '''get_response_body function returns response.'''
+    mock_response = Mock()
+    mock_response.status_code = 200
+    mock_response.content = JSON_STRING
+    mock_get.return_value = mock_response
+
+    requester = GetRequester(URL)
+    assert requester.get_response_body() == JSON_STRING
+
+@patch('requests.get')  # Mock requests.get
+def test_load_json(mock_get):
+    '''load_json function returns response.'''
+    mock_response = Mock()
+    mock_response.status_code = 200
+    mock_response.content = JSON_STRING
+    mock_get.return_value = mock_response
+
+    requester = GetRequester(URL)
+    assert requester.load_json() == CONVERTED_DATA

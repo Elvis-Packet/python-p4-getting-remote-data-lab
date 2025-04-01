@@ -2,7 +2,6 @@ import requests
 import json
 
 class GetRequester:
-
     def __init__(self, url):
         self.url = url
 
